@@ -8,4 +8,5 @@
               (csc-options "-R" "r7rs" "-X" "r7rs")
               (source "sisl.sld")
               (source-dependencies
+                "./lib/format.scm"
                 "./lib/util.scm"))))

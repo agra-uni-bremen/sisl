@@ -1,8 +1,14 @@
 (define-library (sisl)
   (import (scheme base)
           (scheme file)
-          (scheme write))
+          (scheme write)
 
-;;  (export ...)
+          (srfi 1)
 
-  (include "lib/util.scm"))
+          (chicken type))
+
+  (export make-input-format make-field)
+  (export format->bencode)
+
+  (include "lib/util.scm"
+           "lib/format.scm"))
