@@ -12,15 +12,17 @@
 
 (: make-field (string fixnum (or (vector-of string) bytevector) -> (struct Field)))
 (define (make-field name size value)
-  (let ((field (%make-field name size
-                   (if (bytevector? value)
-                     (bytevector->vector value)
-                     value)))) ;; vector? => #t
-    (if (or
-          (field-symbolic? field)
-          (eqv? (bits->bytes* size) (*vector-length value)))
-      field
-      (error "size in bits does not match value vector length"))))
+  (if (> size 0)
+    (let ((field (%make-field name size
+                     (if (bytevector? value)
+                       (bytevector->vector value)
+                       value)))) ;; vector? => #t
+      (if (or
+            (field-symbolic? field)
+            (eqv? (bits->bytes* size) (*vector-length value)))
+        field
+        (error "size in bits does not match value vector length")))
+    (error "field size must be a positive non-zero fixnum")))
 
 (: field-symbolic? ((struct Field) -> boolean))
 (define (field-symbolic? field)
