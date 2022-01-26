@@ -1,0 +1,11 @@
+((author "Sören Tempel")
+ (synopsis "Scheme-based input specification language for concolic testing")
+ (license "MIT")
+ (dependencies r7rs srfi-1 bencode)
+ (test-dependencies test)
+ (components
+   (extension sisl
+              (csc-options "-R" "r7rs" "-X" "r7rs")
+              (source "sisl.sld")
+              (source-dependencies
+                "./lib/util.scm"))))

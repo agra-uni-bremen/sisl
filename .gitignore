@@ -1,0 +1,8 @@
+sisl.build.sh
+sisl.import.scm
+sisl.import.so
+sisl.install.sh
+sisl.link
+sisl.so
+sisl.static.o
+sisl.c
