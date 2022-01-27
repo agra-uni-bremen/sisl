@@ -2,11 +2,13 @@
   (import (scheme base)
           (scheme file)
           (scheme write)
+          (scheme case-lambda)
 
           (srfi 1)
           (srfi 151)
 
-          (chicken type))
+          (chicken type)
+          (bencode))
 
   ;; Input-Format
   (export make-input-format input-format?)
@@ -15,7 +17,7 @@
   ;; Integer abstractions
   (export make-uint make-sint)
   ;; Serialization
-  (export format->bencode field->bencode)
+  (export format->bencode field->bencode write-format)
 
   (include "lib/util.scm"
            "lib/format.scm"))

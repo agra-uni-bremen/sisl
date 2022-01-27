@@ -109,3 +109,13 @@
 (: format->bencode ((struct Input-Format) -> Format-Vector))
 (define (format->bencode format)
   (vector-map field->bencode (input-format-fields format)))
+
+;; Write the representation of format to a textual output port.
+
+(define write-format
+  (case-lambda
+    ((format port)
+     (write-string
+       (bencode->string (format->bencode format))
+       port))
+    ((format) (write-format format (current-output-port)))))
