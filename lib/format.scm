@@ -12,20 +12,22 @@
 
 (: make-field (string fixnum (or (vector-of string) bytevector) -> (struct Field)))
 (define (make-field name size value)
-  ;; TODO: Can be empty for unconstrained fields.
-  ;; XXX: Also needs to be fixed in SymEx-VP.
-  (if (*vector-empty? value)
-    (error "field value cannot be empty")
-    (if (eqv? (bits->bytes* size) (*vector-length value))
-      (%make-field name size
+  (let ((field (%make-field name size
                    (if (bytevector? value)
                      (bytevector->vector value)
-                     value)) ;; vector? => #t
+                     value)))) ;; vector? => #t
+    (if (or
+          (field-symbolic? field)
+          (eqv? (bits->bytes* size) (*vector-length value)))
+      field
       (error "size in bits does not match value vector length"))))
 
 (: field-symbolic? ((struct Field) -> boolean))
 (define (field-symbolic? field)
-  (string? (vector-ref (field-value field) 0)))
+  (let ((v (field-value field)))
+    (or
+      (*vector-empty? v)
+      (string? (vector-ref v 0)))))
 
 ;; Type Input-Format represents the specification of an input format
 ;; consisting of different bit fields. The argument fields is a list of
