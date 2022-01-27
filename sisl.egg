@@ -1,7 +1,7 @@
 ((author "Sören Tempel")
  (synopsis "Scheme-based input specification language for concolic testing")
  (license "MIT")
- (dependencies r7rs srfi-1 bencode)
+ (dependencies r7rs srfi-1 srfi-151 bencode)
  (test-dependencies test)
  (components
    (extension sisl

@@ -10,7 +10,7 @@
   ;; vector of strings (symbolic field) or vector of bytes (concrete field).
   (value field-value))
 
-(: make-field (string -> fixnum -> (or (vector-of string) bytevector) -> (struct Field)))
+(: make-field (string fixnum (or (vector-of string) bytevector) -> (struct Field)))
 (define (make-field name size value)
   ;; TODO: Can be empty for unconstrained fields.
   ;; XXX: Also needs to be fixed in SymEx-VP.
@@ -39,6 +39,37 @@
 (: make-input-format ((list-of (struct Field)) -> (struct Input-Format)))
 (define (make-input-format . body)
   (%make-input-format (list->vector body)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Procedure number->bytevector returns a bytevector representing the
+;; given value with optional padding to the given amount of bits.
+
+(: number->bytevector (fixnum fixnum -> bytevector))
+(define (number->bytevector numbits value)
+  (let ((numbytes (bits->bytes* numbits))
+        (ret (byte-fold (lambda (byte vec)
+                          (bytevector-append vec (bytevector byte)))
+                        #u8() value)))
+    (if (< (bytevector-length ret) numbytes)
+      (bytevector-append
+        (make-bytevector (- numbytes (bytevector-length ret)) #x00)
+        ret)
+      ret)))
+
+;; Procedure make-uint creates a fixed-size unsigned integer field with
+;; a boundary check. The size of the field is given in bits. If the
+;; given value exceeds the maximum value representable in the given
+;; amount of bits, an error is raised.
+
+(: make-uint (string fixnum fixnum -> (struct Field)))
+(define (make-uint name numbits value)
+  (if (> value (dec (expt 2 numbits)))
+    (error "value not representable in given amount of bits")
+    (make-field
+      name
+      numbits
+      (number->bytevector numbits value))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

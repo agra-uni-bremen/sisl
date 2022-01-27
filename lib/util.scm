@@ -63,3 +63,37 @@
     (if (zero? rem)
       (bits->bytes bits)
       (/ (+ (- bits rem) 8) 8))))
+
+;; Get the nth byte in the given number.
+
+(: get-byte (fixnum fixnum -> fixnum))
+(define (get-byte value nth)
+  (let ((mask  (- (expt 2 8) 1))
+        (shamt (* -1 (* nth 8))))
+    (bitwise-and (arithmetic-shift value shamt) mask)))
+
+;; Return the amount of bytes needed to represent number.
+
+(: byte-length (fixnum -> fixnum))
+(define (byte-length number)
+  (let* ((bit-length (integer-length number))
+         (rem (modulo bit-length 8)))
+    (/
+      (if (zero? rem)
+        bit-length
+        (+ (- bit-length rem) 8)) ;; Round to next byte boundary
+      8)))
+
+;; Fold over individual bytes of given fixnum.
+
+(: byte-fold ((fixnum * -> *) * fixnum -> *))
+(define (byte-fold proc seed number)
+  (define (recur n)
+    (if (>= n (byte-length number))
+      seed
+      (proc (get-byte number n)
+            (recur (+ n 1)))))
+
+  (if (zero? number)
+    (proc 0 seed)
+    (recur 0)))
