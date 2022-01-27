@@ -12,6 +12,8 @@
 
 (: make-field (string -> fixnum -> (or (vector-of string) bytevector) -> (struct Field)))
 (define (make-field name size value)
+  ;; TODO: Can be empty for unconstrained fields.
+  ;; XXX: Also needs to be fixed in SymEx-VP.
   (if (*vector-empty? value)
     (error "field value cannot be empty")
     (if (eqv? (bits->bytes* size) (*vector-length value))
