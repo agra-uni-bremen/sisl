@@ -13,7 +13,7 @@
   ;; Field
   (export make-field field?)
   ;; Integer abstractions
-  (export make-uint)
+  (export make-uint make-sint)
   ;; Serialization
   (export format->bencode field->bencode)
 

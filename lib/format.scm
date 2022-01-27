@@ -43,7 +43,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Procedure number->bytevector returns a bytevector representing the
-;; given value with optional padding to the given amount of bits.
+;; given value with optional padding to the next byte boundary according
+;; to the given amount of bits.
 
 (: number->bytevector (fixnum fixnum -> bytevector))
 (define (number->bytevector numbits value)
@@ -70,6 +71,27 @@
       name
       numbits
       (number->bytevector numbits value))))
+
+;; Procedure make-sint creates a fixed-size signed integer field with a
+;; boundary check. Signed integers are represented in two's complement.
+;; The size of the two's complement field is given in bits. If the given
+;; value exceeds the maximum value representable in the given amount of
+;; bits, an error is raised.
+
+(: make-sint (string fixnum fixnum -> (struct Field)))
+(define (make-sint name numbits value)
+  (let ((max (/ (expt 2 numbits) 2)))
+    (if (or (>= value max)
+            (< value (* -1 max)))
+      (error "value not representable in given amount of bits")
+      (make-field
+        name
+        numbits
+        (number->bytevector
+          numbits
+          (if (negative? value)
+            (+ (expt 2 numbits) value)
+            value))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
