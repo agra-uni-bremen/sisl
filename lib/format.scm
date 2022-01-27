@@ -46,6 +46,34 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Convert KLEE KQuery constraints to a list of strings.
+
+(define (constraints->list constraints)
+  (define (constraint->string constraint)
+    (call-with-port
+      (open-output-string)
+      (lambda (port)
+        (write constraint port)
+        (get-output-string port))))
+
+  (map constraint->string constraints))
+
+(: make-concrete-field (string fixnum bytevector -> (struct Field)))
+(define (make-concrete-field name numbits bv)
+  (make-field
+    name
+    numbits
+    bv))
+
+(: make-symbolic-field (string fixnum (list-of (list-of symbol)) -> (struct Field)))
+(define (make-symbolic-field name numbits constraints)
+  (make-field
+    name
+    numbits
+    (list->vector (constraints->list constraints))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; Procedure number->bytevector returns a bytevector representing the
 ;; given value with optional padding to the next byte boundary according
 ;; to the given amount of bits.
@@ -71,7 +99,7 @@
 (define (make-uint name numbits value)
   (if (> value (dec (expt 2 numbits)))
     (error "value not representable in given amount of bits")
-    (make-field
+    (make-concrete-field
       name
       numbits
       (number->bytevector numbits value))))
@@ -88,7 +116,7 @@
     (if (or (>= value max)
             (< value (* -1 max)))
       (error "value not representable in given amount of bits")
-      (make-field
+      (make-concrete-field
         name
         numbits
         (number->bytevector

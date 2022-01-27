@@ -13,7 +13,7 @@
   ;; Input-Format
   (export make-input-format input-format?)
   ;; Field
-  (export make-field field?)
+  (export field? make-concrete-field make-symbolic-field)
   ;; Integer abstractions
   (export make-uint make-sint)
   ;; Serialization
