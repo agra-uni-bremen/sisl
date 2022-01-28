@@ -104,6 +104,11 @@
       numbits
       (number->bytevector numbits value))))
 
+(define (u8  name value) (make-uint name 8  value))
+(define (u16 name value) (make-uint name 16 value))
+(define (u32 name value) (make-uint name 32 value))
+(define (u64 name value) (make-uint name 64 value))
+
 ;; Procedure make-sint creates a fixed-size signed integer field with a
 ;; boundary check. Signed integers are represented in two's complement.
 ;; The size of the two's complement field is given in bits. If the given
@@ -124,6 +129,11 @@
           (if (negative? value)
             (+ (expt 2 numbits) value)
             value))))))
+
+(define (s8  name value) (make-sint name 8  value))
+(define (s16 name value) (make-sint name 16 value))
+(define (s32 name value) (make-sint name 32 value))
+(define (s64 name value) (make-sint name 64 value))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
