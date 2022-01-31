@@ -57,17 +57,7 @@
      (define (ARGS ...)
        (make-input-format BODY ...)))))
 
-;; Convert KLEE KQuery constraints to a list of strings.
-
-(define (constraints->list constraints)
-  (define (constraint->string constraint)
-    (call-with-port
-      (open-output-string)
-      (lambda (port)
-        (write constraint port)
-        (get-output-string port))))
-
-  (map constraint->string constraints))
+;; Create a new concrete field.
 
 (: make-concrete-field (string fixnum bytevector -> (struct Field)))
 (define (make-concrete-field name numbits bv)
@@ -76,8 +66,19 @@
     numbits
     bv))
 
+;; Create a new symbolic field with optional constraints.
+
 (: make-symbolic-field (string fixnum #!optional (list-of (list-of symbol)) -> (struct Field)))
 (define (make-symbolic-field name numbits #!optional (constraints '()))
+  (define (constraint->string constraint)
+    (call-with-port
+      (open-output-string)
+      (lambda (port)
+        (write constraint port)
+        (get-output-string port))))
+  (define (constraints->list constraints)
+    (map constraint->string constraints))
+
   (make-field
     name
     numbits
