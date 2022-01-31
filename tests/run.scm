@@ -60,7 +60,7 @@
     (make-sint "padded" 16 23))
 
   (test-field "pad negative"
-    #("padded" 16 #(#xff #b11111110))
+    #("padded" 16 #(#x00 #b11111110))
     (make-sint "padded" 16 -2))
 
   (test-error "negative value exceeds size"

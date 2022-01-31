@@ -138,7 +138,7 @@
         (number->bytevector
           numbits
           (if (negative? value)
-            (+ (expt 2 numbits) value)
+            (- value (arithmetic-shift 1 (- numbits)))
             value))))))
 
 (define (s8  name value) (make-sint name 8  value))
