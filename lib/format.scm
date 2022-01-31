@@ -76,8 +76,8 @@
     numbits
     bv))
 
-(: make-symbolic-field (string fixnum (list-of (list-of symbol)) -> (struct Field)))
-(define (make-symbolic-field name numbits constraints)
+(: make-symbolic-field (string fixnum #!optional (list-of (list-of symbol)) -> (struct Field)))
+(define (make-symbolic-field name numbits #!optional (constraints '()))
   (make-field
     name
     numbits

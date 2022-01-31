@@ -19,6 +19,11 @@
     (make-input-format
       (make-symbolic-field "s1" 8 `((Eq w8 s1 42)))))
 
+  (test-format "unconstrained symbolic input"
+    #(#("symbolic" 16 #()))
+    (make-input-format
+      (make-symbolic-field "symbolic" 16)))
+
   (test-format "mixed input format"
     #(#("s1" 8 #("(Eq w8 s1 5)"))
       #("c1" 16 #(#x23 #x42)))
