@@ -8,42 +8,6 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(test-group "input format"
-  (test-format "concrete input format"
-    #(#("c1" 16 #(23 42)))
-    (make-input-format
-      (make-concrete-field "c1" 16 #u8(23 42))))
-
-  (test-format "symbolic input format"
-    #(#("s1" 8 #("(Eq w8 s1 42)")))
-    (make-input-format
-      (make-symbolic-field "s1" 8 `((Eq w8 s1 42)))))
-
-  (test-format "unconstrained symbolic input"
-    #(#("symbolic" 16 #()))
-    (make-input-format
-      (make-symbolic-field "symbolic" 16)))
-
-  (test-format "mixed input format"
-    #(#("s1" 8 #("(Eq w8 s1 5)"))
-      #("c1" 16 #(#x23 #x42)))
-    (make-input-format
-      (make-symbolic-field "s1" 8 `((Eq w8 s1 5)))
-      (make-concrete-field "c1" 16 #(#x23 #x42))))
-
-  (test-format "byteorder"
-    #(#("c1" 16 #(#x42 #x23))
-      #("c2" 4  #(#xf))
-      #("c3" 24 #(#x42 #xff #x23))
-      #("c4" 16 #(#x23 #x42))
-      #("c5" 32 #(#x00 #x00 #x42 #x23)))
-    (make-input-format
-      (field-le (make-concrete-field "c1" 16 #(#x23 #x42)))
-      (field-be (make-concrete-field "c2" 4 #(#xf)))
-      (field-le (make-uint "c3" 24 #x23ff42))
-      (field-be (make-uint "c4" 16 #x2342))
-      (field-le (make-uint "c5" 32 #x2342)))))
-
 (test-group "make-uint"
   (test-field "single byte"
     #("c1" 8 #(255))
@@ -98,6 +62,42 @@
 
   (test-error "positive value exceeds size"
     (make-sint "error" 8 128)))
+
+(test-group "input format"
+  (test-format "concrete input format"
+    #(#("c1" 16 #(23 42)))
+    (make-input-format
+      (make-concrete-field "c1" 16 #u8(23 42))))
+
+  (test-format "symbolic input format"
+    #(#("s1" 8 #("(Eq w8 s1 42)")))
+    (make-input-format
+      (make-symbolic-field "s1" 8 `((Eq w8 s1 42)))))
+
+  (test-format "unconstrained symbolic input"
+    #(#("symbolic" 16 #()))
+    (make-input-format
+      (make-symbolic-field "symbolic" 16)))
+
+  (test-format "mixed input format"
+    #(#("s1" 8 #("(Eq w8 s1 5)"))
+      #("c1" 16 #(#x23 #x42)))
+    (make-input-format
+      (make-symbolic-field "s1" 8 `((Eq w8 s1 5)))
+      (make-concrete-field "c1" 16 #(#x23 #x42))))
+
+  (test-format "byteorder"
+    #(#("c1" 16 #(#x42 #x23))
+      #("c2" 4  #(#xf))
+      #("c3" 24 #(#x42 #xff #x23))
+      #("c4" 16 #(#x23 #x42))
+      #("c5" 32 #(#x00 #x00 #x42 #x23)))
+    (make-input-format
+      (field-le (make-concrete-field "c1" 16 #(#x23 #x42)))
+      (field-be (make-concrete-field "c2" 4 #(#xf)))
+      (field-le (make-uint "c3" 24 #x23ff42))
+      (field-be (make-uint "c4" 16 #x2342))
+      (field-le (make-uint "c5" 32 #x2342)))))
 
 ;; Exit with non-zero exit status on test failure.
 (test-exit)
