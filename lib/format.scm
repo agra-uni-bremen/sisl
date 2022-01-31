@@ -82,8 +82,8 @@
 
 ;; Create a new concrete field.
 
-(: make-concrete-field (string fixnum bytevector -> (struct Field)))
-(define (make-concrete-field name numbits bv)
+(: make-concrete (string fixnum bytevector -> (struct Field)))
+(define (make-concrete name numbits bv)
   (make-field
     name
     numbits
@@ -91,8 +91,8 @@
 
 ;; Create a new symbolic field with optional constraints.
 
-(: make-symbolic-field (string fixnum #!optional (list-of (list-of symbol)) -> (struct Field)))
-(define (make-symbolic-field name numbits #!optional (constraints '()))
+(: make-symbolic (string fixnum #!optional (list-of (list-of symbol)) -> (struct Field)))
+(define (make-symbolic name numbits #!optional (constraints '()))
   (define (constraint->string constraint)
     (call-with-port
       (open-output-string)
