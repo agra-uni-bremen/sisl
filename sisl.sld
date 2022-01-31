@@ -11,7 +11,7 @@
           (bencode))
 
   ;; Input-Format
-  (export make-input-format input-format?)
+  (export define-input-format make-input-format input-format?)
   ;; Field
   (export field? make-concrete-field make-symbolic-field)
   ;; Integer abstractions

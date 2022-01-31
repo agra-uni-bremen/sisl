@@ -46,6 +46,17 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Macro to define new input format.
+
+(define-syntax define-input-format
+  (syntax-rules ()
+    ((define-format NAME BODY ...)
+     (define NAME
+       (make-input-format BODY ...)))
+    ((define-format (ARGS ...) BODY ...)
+     (define (ARGS ...)
+       (make-input-format BODY ...)))))
+
 ;; Convert KLEE KQuery constraints to a list of strings.
 
 (define (constraints->list constraints)
