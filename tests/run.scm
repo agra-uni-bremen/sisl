@@ -29,7 +29,20 @@
       #("c1" 16 #(#x23 #x42)))
     (make-input-format
       (make-symbolic-field "s1" 8 `((Eq w8 s1 5)))
-      (make-concrete-field "c1" 16 #(#x23 #x42)))))
+      (make-concrete-field "c1" 16 #(#x23 #x42))))
+
+  (test-format "byteorder"
+    #(#("c1" 16 #(#x42 #x23))
+      #("c2" 4  #(#xf))
+      #("c3" 24 #(#x42 #xff #x23))
+      #("c4" 16 #(#x23 #x42))
+      #("c5" 32 #(#x00 #x00 #x42 #x23)))
+    (make-input-format
+      (field-le (make-concrete-field "c1" 16 #(#x23 #x42)))
+      (field-be (make-concrete-field "c2" 4 #(#xf)))
+      (field-le (make-uint "c3" 24 #x23ff42))
+      (field-be (make-uint "c4" 16 #x2342))
+      (field-le (make-uint "c5" 32 #x2342)))))
 
 (test-group "make-uint"
   (test-field "single byte"
@@ -47,6 +60,18 @@
   (test-field "single nibble"
     #("nibble" 4 #(#x0f))
     (make-uint "nibble" 4 #xf))
+
+  (test-field "big endian integer"
+    #("be" 16 #(#x23 #x42))
+    (field-be (make-uint "be" 16 #x2342)))
+
+  (test-field "little endian integer"
+    #("le" 16 #(#x42 #x23))
+    (field-le (make-uint "le" 16 #x2342)))
+
+  (test-field "little endian with padding"
+    #("le" 32 #(#x00 #x00 #x42 #x23))
+    (field-le (make-uint "le" 32 #x2342)))
 
   (test-error "value exceeds size"
     (make-uint "byte" 8 (+ #xff 1))))

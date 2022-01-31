@@ -24,7 +24,15 @@
 
 (: bytevector->vector (bytevector -> vector))
 (define (bytevector->vector bv)
+  ;; XXX: Could be implemented more efficently.
   (list->vector (bytevector->list bv)))
+
+;; Reverse vector.
+
+(: vector-reverse (vector -> vector))
+(define (vector-reverse bv)
+  ;; XXX: Could be implemented more efficently.
+  (apply vector (reverse (vector->list bv))))
 
 ;; Returns the length of a given vector or bytevector.
 

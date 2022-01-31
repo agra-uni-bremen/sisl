@@ -1,22 +1,25 @@
 ;; Type Field represents a bit field for the input format.
 
 (define-record-type Field
-  (%make-field name size value)
+  (%make-field name size value padding)
   field?
   ;; string with human-readable name of field.
   (name field-name)
   ;; size of field in bits, *not* bytes.
   (size field-size)
   ;; vector of strings (symbolic field) or vector of bytes (concrete field).
-  (value field-value))
+  (value field-value)
+  ;; optional padding added to value (i.e. by make-sint or make-uint).
+  (padding field-padding))
 
-(: make-field (string fixnum (or (vector-of string) bytevector) -> (struct Field)))
-(define (make-field name size value)
+(: make-field (string fixnum (or (vector-of string) bytevector) #!optional fixnum -> (struct Field)))
+(define (make-field name size value #!optional (padding 0))
   (if (> size 0)
     (let ((field (%make-field name size
                      (if (bytevector? value)
                        (bytevector->vector value)
-                       value)))) ;; vector? => #t
+                       value)
+                     padding))) ;; vector? => #t
       (if (or
             (field-symbolic? field)
             (eqv? (bits->bytes* size) (*vector-length value)))
@@ -30,6 +33,22 @@
     (or
       (*vector-empty? v)
       (string? (vector-ref v 0)))))
+
+(: field-byteswap ((struct Field) -> (struct Field)))
+(define (field-byteswap field)
+  (unless (field-symbolic? field)
+    (let ((value (field-value field))
+          (padding (field-padding field)))
+      (make-field
+        (field-name field)
+        (field-size field)
+        (vector-append
+          (make-vector padding #x00)
+          (vector-reverse (vector-copy value padding)))
+        padding))))
+
+(define (field-le field) (field-byteswap field))
+(define (field-be field) field)
 
 ;; Type Input-Format represents the specification of an input format
 ;; consisting of different bit fields. The argument fields is a list of
@@ -90,17 +109,20 @@
 ;; given value with optional padding to the next byte boundary according
 ;; to the given amount of bits.
 
-(: number->bytevector (fixnum fixnum -> bytevector))
+;(: number->bytevector (fixnum fixnum -> fixnum bytevector))
 (define (number->bytevector numbits value)
-  (let ((numbytes (bits->bytes* numbits))
-        (ret (byte-fold (lambda (byte vec)
+  (let* ((numbytes (bits->bytes* numbits))
+         (ret (byte-fold (lambda (byte vec)
                           (bytevector-append vec (bytevector byte)))
-                        #u8() value)))
-    (if (< (bytevector-length ret) numbytes)
-      (bytevector-append
-        (make-bytevector (- numbytes (bytevector-length ret)) #x00)
-        ret)
-      ret)))
+                        #u8() value))
+         (pad (- numbytes (bytevector-length ret))))
+    (values
+      pad
+      (if (zero? pad)
+        ret
+        (bytevector-append
+          (make-bytevector pad #x00)
+          ret)))))
 
 ;; Procedure make-uint creates a fixed-size unsigned integer field with
 ;; a boundary check. The size of the field is given in bits. If the
@@ -111,10 +133,8 @@
 (define (make-uint name numbits value)
   (if (> value (dec (expt 2 numbits)))
     (error "value not representable in given amount of bits")
-    (make-concrete-field
-      name
-      numbits
-      (number->bytevector numbits value))))
+    (let-values (((pad bv) (number->bytevector numbits value)))
+      (make-field name numbits bv pad))))
 
 (define (u8  name value) (make-uint name 8  value))
 (define (u16 name value) (make-uint name 16 value))
@@ -133,14 +153,11 @@
     (if (or (>= value max)
             (< value (* -1 max)))
       (error "value not representable in given amount of bits")
-      (make-concrete-field
-        name
-        numbits
-        (number->bytevector
-          numbits
-          (if (negative? value)
-            (- value (arithmetic-shift 1 (- numbits)))
-            value))))))
+      (let*-values (((v) (if (negative? value)
+                           (- value (arithmetic-shift 1 (- numbits)))
+                           value))
+                    ((pad bv) (number->bytevector numbits v)))
+        (make-field name numbits bv pad)))))
 
 (define (s8  name value) (make-sint name 8  value))
 (define (s16 name value) (make-sint name 16 value))
