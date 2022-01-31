@@ -6,7 +6,7 @@
   ;; string with human-readable name of field.
   (name field-name)
   ;; size of field in bits, *not* bytes.
-  (size field-size)
+  (size field-bitsize)
   ;; vector of strings (symbolic field) or vector of bytes (concrete field).
   (value field-value)
   ;; optional padding added to value (i.e. by make-sint or make-uint).
@@ -27,6 +27,10 @@
         (error "size in bits does not match value vector length")))
     (error "field size must be a positive non-zero fixnum")))
 
+(: field-bytesize ((struct Field) -> fixnum))
+(define (field-bytesize field)
+  (bits->bytes (field-bitsize field)))
+
 (: field-symbolic? ((struct Field) -> boolean))
 (define (field-symbolic? field)
   (let ((v (field-value field)))
@@ -41,7 +45,7 @@
           (padding (field-padding field)))
       (make-field
         (field-name field)
-        (field-size field)
+        (field-bitsize field)
         (vector-append
           (make-vector padding #x00)
           (vector-reverse (vector-copy value padding)))
@@ -172,7 +176,7 @@
 (define (field->bencode field)
   (vector
     (field-name field)
-    (field-size field)
+    (field-bitsize field)
     (field-value field)))
 
 (define-type Format-Vector (vector-of Field-Vector))
