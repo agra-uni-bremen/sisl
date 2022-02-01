@@ -10,6 +10,7 @@
 
 (define icmpv6-next-header 58)
 
+;; See https://datatracker.ietf.org/doc/html/rfc8200#section-3
 (define-input-format (ipv6-packet next-hdr &encapsulate payload)
   (make-uint "verison-field" 4 ipv6-version-value)
   (make-uint "traffic-class" 8 #x0)
@@ -20,10 +21,17 @@
   (make-symbolic "src-addr" 128)
   (make-concrete "dest-addr" 128 ipv6-loopback))
 
-(define-input-format icmpv6-packet
-  (make-uint "payload" 32 #xdeadbeef))
+;; See https://datatracker.ietf.org/doc/html/rfc4443#section-2.1
+(define-input-format (icmpv6-packet &encapsulate body)
+  (make-symbolic "type" 8 `((Or
+                              (Eq type 128)
+                              (Eq type 127))))
+  (make-symbolic "code" 8)
+  (make-symbolic "checksum" 16))
 
 (write-format
   (ipv6-packet
     icmpv6-next-header
-    icmpv6-packet))
+    (icmpv6-packet
+      (make-input-format
+        (make-symbolic "body" (bytes->bits 8))))))
