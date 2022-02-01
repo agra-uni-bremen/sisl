@@ -1,6 +1,6 @@
 #!/usr/bin/csi -s
 
-(import (scheme base) sisl)
+(import sisl)
 
 (define ipv6-version-value #x6)
 (define ipv6-loopback #u8(#x00 #x00 #x00 #x00
