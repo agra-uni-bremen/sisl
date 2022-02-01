@@ -3,7 +3,7 @@
 (define-record-type Field
   (%make-field name size value padding)
   field?
-  ;; string with human-readable name of field.
+  ;; symbol with human-readable name of field.
   (name field-name)
   ;; size of field in bits, *not* bytes.
   (size field-bitsize)
@@ -12,7 +12,7 @@
   ;; optional padding added to value (i.e. by make-sint or make-uint).
   (padding field-padding))
 
-(: make-field (string fixnum (or (vector-of string) bytevector) #!optional fixnum -> (struct Field)))
+(: make-field (symbol fixnum (or (vector-of string) bytevector) #!optional fixnum -> (struct Field)))
 (define (make-field name size value #!optional (padding 0))
   (if (> size 0)
     (let ((field (%make-field name size
@@ -108,7 +108,7 @@
 
 ;; Create a new concrete field.
 
-(: make-concrete (string fixnum bytevector -> (struct Field)))
+(: make-concrete (symbol fixnum bytevector -> (struct Field)))
 (define (make-concrete name numbits bv)
   (make-field
     name
@@ -117,7 +117,7 @@
 
 ;; Create a new symbolic field with optional constraints.
 
-(: make-symbolic (string fixnum #!optional (list-of (list-of symbol)) -> (struct Field)))
+(: make-symbolic (symbol fixnum #!optional (list-of (list-of symbol)) -> (struct Field)))
 (define (make-symbolic name numbits #!optional (constraints '()))
   (define (constraint->string constraint)
     (call-with-port
@@ -159,7 +159,7 @@
 ;; given value exceeds the maximum value representable in the given
 ;; amount of bits, an error is raised.
 
-(: make-uint (string fixnum fixnum -> (struct Field)))
+(: make-uint (symbol fixnum fixnum -> (struct Field)))
 (define (make-uint name numbits value)
   (if (> value (dec (expt 2 numbits)))
     (error "value not representable in given amount of bits")
@@ -177,7 +177,7 @@
 ;; value exceeds the maximum value representable in the given amount of
 ;; bits, an error is raised.
 
-(: make-sint (string fixnum fixnum -> (struct Field)))
+(: make-sint (symbol fixnum fixnum -> (struct Field)))
 (define (make-sint name numbits value)
   (let ((max (/ (expt 2 numbits) 2)))
     (if (or (>= value max)
@@ -201,7 +201,7 @@
 (: field->bencode ((struct Field) -> Field-Vector))
 (define (field->bencode field)
   (vector
-    (field-name field)
+    (symbol->string (field-name field))
     (field-bitsize field)
     (field-value field)))
 
