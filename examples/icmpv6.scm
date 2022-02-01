@@ -2,13 +2,17 @@
 
 (import sisl)
 
+;; IPv6 constants
 (define ipv6-version-value #x6)
 (define ipv6-loopback #u8(#x00 #x00 #x00 #x00
                           #x00 #x00 #x00 #x00
                           #x00 #x00 #x00 #x00
                           #x00 #x00 #x00 #x01))
 
+;; ICMPv6 constants
 (define icmpv6-next-header 58)
+(define icmpv6-echo-req 128)
+(define icmpv6-echo-rep 129)
 
 ;; See https://datatracker.ietf.org/doc/html/rfc8200#section-3
 (define-input-format (ipv6-packet next-hdr &encapsulate payload)
@@ -24,8 +28,8 @@
 ;; See https://datatracker.ietf.org/doc/html/rfc4443#section-2.1
 (define-input-format (icmpv6-packet &encapsulate body)
   (make-symbolic "type" 8 `((Or
-                              (Eq type 128)
-                              (Eq type 127))))
+                              (Eq type ,icmpv6-echo-req)
+                              (Eq type ,icmpv6-echo-rep))))
   (make-symbolic "code" 8)
   (make-symbolic "checksum" 16))
 
