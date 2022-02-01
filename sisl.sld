@@ -11,7 +11,8 @@
           (bencode))
 
   ;; Input-Format
-  (export define-input-format make-input-format input-format?)
+  (export define-input-format make-input-format input-format?
+          input-format-bitsize input-format-bytsize)
   ;; Field
   (export make-concrete make-symbolic field?
           field-bitsize field-bytesize field-le field-be)

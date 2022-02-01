@@ -67,12 +67,38 @@
 (define (make-input-format . body)
   (%make-input-format (list->vector body)))
 
+(: input-format-bitsize ((struct Input-Format) -> fixnum))
+(define (input-format-bitsize format)
+  (define (%input-format-bitsize v idx)
+    (if (>= idx (vector-length v))
+      0
+      (+ (field-bitsize (vector-ref v idx))
+         (%input-format-bitsize v (inc idx)))))
+
+  (%input-format-bitsize (input-format-fields format) 0))
+
+(: input-format-bytsize ((struct Input-Format) -> fixnum))
+(define (input-format-bytsize format)
+  (bits->bytes (input-format-bitsize format)))
+
+(: input-format-append ((struct Input-Format) (struct Input-Format) -> (struct Input-Format)))
+(define (input-format-append this other)
+  (%make-input-format
+    (vector-append
+      (input-format-fields this)
+      (input-format-fields other))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Macro to define new input format.
 
 (define-syntax define-input-format
-  (syntax-rules ()
+  (syntax-rules (&encapsulate)
+    ((define-format (ARGS ... &encapsulate FORMAT) BODY ...)
+     (define (ARGS ... FORMAT)
+       (input-format-append
+        (make-input-format BODY ...)
+        FORMAT)))
     ((define-format NAME BODY ...)
      (define NAME
        (make-input-format BODY ...)))
