@@ -12,7 +12,7 @@
 
   ;; Input-Format
   (export define-input-format make-input-format input-format?
-          input-format-bitsize input-format-bytsize)
+          input-format-bitsize input-format-bytesize)
   ;; Field
   (export make-concrete make-symbolic field?
           field-bitsize field-bytesize field-le field-be)

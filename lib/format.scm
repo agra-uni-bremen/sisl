@@ -77,8 +77,8 @@
 
   (%input-format-bitsize (input-format-fields format) 0))
 
-(: input-format-bytsize ((struct Input-Format) -> fixnum))
-(define (input-format-bytsize format)
+(: input-format-bytesize ((struct Input-Format) -> fixnum))
+(define (input-format-bytesize format)
   (bits->bytes (input-format-bitsize format)))
 
 (: input-format-append ((struct Input-Format) (struct Input-Format) -> (struct Input-Format)))

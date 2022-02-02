@@ -19,7 +19,7 @@
   (make-uint 'verison-field 4 ipv6-version-value)
   (make-uint 'traffic-class 8 #x0)
   (make-uint 'flow-label 20 #x0)
-  (make-uint 'payload-length 16 (input-format-bytsize payload))
+  (make-uint 'payload-length 16 (input-format-bytesize payload))
   (make-uint 'next-header 8 next-hdr)
   (make-uint 'hop-limit 8 #x42)
   (make-symbolic 'src-addr 128)
