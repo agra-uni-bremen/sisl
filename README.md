@@ -8,17 +8,6 @@ If a correctly configured CHICKEN toolchain is available run:
 
     $ chicken-install
 
-## Development Setup
-
-For development setups, build as follows:
-
-    $ export CHICKEN_REPOSITORY_PATH="${CHICKEN_REPOSITORY_PATH}:$(pwd)"
-    $ chicken-install -n
-
-## Usage
-
-TODO.
-
 ## Acknowledgements
 
 This work was supported in part by the German Federal Ministry of
