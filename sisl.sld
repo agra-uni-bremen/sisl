@@ -11,10 +11,11 @@
           (bencode))
 
   ;; Input-Format
-  (export define-input-format make-input-format input-format?
-          input-format-bitsize input-format-bytesize)
+  (export define-input-format make-input-format Input-Format
+          input-format? input-format-bitsize input-format-bytesize
+          input-format-fields)
   ;; Field
-  (export make-concrete make-symbolic field?
+  (export make-concrete make-symbolic field? field-name
           field-bitsize field-bytesize field-le field-be)
   ;; Integer abstractions
   (export make-uint u8 u16 u32 u64 make-sint s8 s16 s32 s64)
