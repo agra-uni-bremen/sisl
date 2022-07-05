@@ -13,6 +13,16 @@ the link, you will download a ZIP archive containing the SISL source
 code. Information on how to install the SISL tooling, using this ZIP
 archive, are provided below.
 
+## Directory Organization
+
+The important subdirectories in the downloaded archive are:
+
+* `examples/`: Contains example RIOT application demonstrating the use of SISL.
+* `vp/`: Contains the source code of our SISL enhanced version of SymEx-VP.
+* `sisl/`: Includes the source code of the SISL R7RS Scheme library.
+
+Refer to the source code in the subdirectory of each component for implementation details.
+
 ## Installation
 
 The SISL tooling can be installed on Linux/Windows/macOS using
@@ -316,16 +326,6 @@ These are listed below:
 Additionally, keep in mind that each SISL specification is a valid Scheme program.
 For this reason, it is possible to use Scheme language features (e.g. procedures, variables, constants, …) in a SISL specification.
 For example, as we have seen above, Scheme constants can be used to avoid magic numbers in defined input formats (e.g. `(define icmpv6-na 134)`).
-
-## Directory Organization
-
-The important subdirectories in the downloaded archive are:
-
-* `examples/`: Contains example RIOT application demonstrating the use of SISL.
-* `vp/`: Contains the source code of our SISL enhanced version of SymEx-VP.
-* `sisl/`: Includes the source code of the SISL R7RS Scheme library.
-
-Refer to the source code in the subdirectory of each component for implementation details.
 
 ## Acknowledgements
 
