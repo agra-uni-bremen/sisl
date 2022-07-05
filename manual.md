@@ -52,28 +52,7 @@ Docker container*:
 	$ make -C /home/sisl/sisl-vp/examples/sisl-network-stack/ simulate
 
 The `sisl-network-stack` example application and the associated SISL
-specification are described in greater detail below. Usage of the SISL
-tooling within the Docker container environment is also illustrated in
-the video below.
-
-## Getting Started
-
-The following video will serve as a quick introducing to the provided SISL tooling.
-
-<div style="text-align: center;">
-<video style="width: auto; height: auto; max-width: 100%; max-height: 100%" src="sisl-tutorial.mp4" controls>
-Unfortunately, your browser does not support HTML5 video.
-Try <a href="sisl-tutorial.mp4">downloading the video</a> instead.
-</video>
-</div>
-
-The following aspects are covered in this video:
-
-* Overview of provided files
-* Installation of the SISL tooling using Docker
-* Usage of SISL to test an example application
-
-Further textual information is also provided in this user manual.
+specification are described in greater detail below.
 
 ## Usage Example
 
