@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>SISL User Manual</title>
+
+		<meta name="color-scheme" content="light dark">
+		<link rel="stylesheet" href="github-markdown.css">
+
+		<style>
+			.markdown-body {
+				box-sizing: border-box;
+				min-width: 200px;
+				max-width: 980px;
+				margin: 0 auto;
+				padding: 45px;
+			}
+		</style>
+	</head>
+	<body>
+		<article class="markdown-body">
+			<h1 id="SISL-User-Manual">SISL User Manual</h1>
+
+<p>User manual for the <em>Scheme-based Input Specification Language</em> (SISL).
+SISL is a <em>Domain-Specific Language</em> (DSL) for describing highly
+structured binary input formats (e.g. protocol message formats) for
+<a href="https://en.wikipedia.org/wiki/Concolic_testing">concolic software testing</a>.</p>
+
+<p>More information about SISL is also available in the publication <em>SISL:
+Concolic Testing of Structured Binary Input Formats via Partial
+Specification</em> which will be published as part of the 2022 International
+Symposium on Automated Technology for Verification and Analysis
+(<a href="https://atva-conference.org/2022/">ATVA</a>).</p>
+
+<h2 id="Download">Download</h2>
+
+<p>To install SISL, first download the source code and accompanying example
+applications by clicking on <a href="https://user.informatik.uni-bremen.de/~tempel/sisl/sisl.zip">this link</a>. By clicking on
+the link, you will download a ZIP archive containing the SISL source
+code. Information on how to install the SISL tooling, using this ZIP
+archive, are provided below.</p>
+
+<p>Apart from the source tarball, the SISL source code and the
+modifications made to integrate SISL with SymEx-VP are also available in
+the following Git repositories:</p>
+
+<ul>
+<li><a href="https://github.com/agra-uni-bremen/sisl">https://github.com/agra-uni-bremen/sisl</a></li>
+<li><a href="https://github.com/agra-uni-bremen/sisl-vp">https://github.com/agra-uni-bremen/sisl-vp</a></li>
+</ul>
+
+
+<h2 id="Directory-Organization">Directory Organization</h2>
+
+<p>The important subdirectories in the downloaded archive are:</p>
+
+<ul>
+<li><code>examples/</code>: Contains example RIOT application demonstrating the use of SISL.</li>
+<li><code>vp/</code>: Contains the source code of our SISL enhanced version of SymEx-VP.</li>
+<li><code>sisl/</code>: Includes the source code of the SISL R7RS Scheme library.</li>
+</ul>
+
+
+<p>Refer to the source code in the subdirectory of each component for implementation details.</p>
+
+<h2 id="Installation">Installation</h2>
+
+<p>The SISL tooling can be installed on Linux/Windows/macOS using
+<a href="https://www.docker.io/">Docker</a>. In order to use this tool, Docker therefore needs
+to be installed first on your system. If Docker isn&rsquo;t installed yet,
+please follow the official Docker installation instructions for your
+operating system, see:</p>
+
+<ul>
+<li><a href="https://docs.docker.com/engine/install/ubuntu/">Install Docker on Ubuntu Linux</a></li>
+<li><a href="https://docs.docker.com/desktop/mac/install/">Install Docker on Mac</a></li>
+<li><a href="https://docs.docker.com/desktop/windows/install/">Install Docker on Windows</a> (WSL 2 Backend is recommended)</li>
+</ul>
+
+
+<p>After installing Docker, extract the <code>sisl.zip</code> file downloaded from
+above, open a command-line shell and navigate to the directory
+containing the SISL source code on your computer (refer to your
+operating system documentation on how to do that). In the SISL source
+code directory (which should include a <code>Dockerfile</code>), run the following
+command to build the SISL Docker image:</p>
+
+<pre><code>$ docker build -t sisl .
+</code></pre>
+
+<p>Depending on your hardware, this may take between 5 and 10 minutes.  If
+the command was executed successfully, a Docker image for SISL was
+created. You can verify that this is the case by checking the output of
+the <code>docker images</code> command (see the <a href="https://docs.docker.com/engine/reference/commandline/images/">Docker documentation</a> for more details). The generated <code>sisl</code> image can then be
+started from your operating system command-line shell using the
+following command:</p>
+
+<pre><code>$ docker run -it sisl
+</code></pre>
+
+<p>This will spawn a new interactive Linux command-line shell environment
+from which the SISL tool can be used. In case you want to quickly run
+an example application, invoke the following command <em>from within the
+Docker container</em>:</p>
+
+<pre><code>$ make -C /home/sisl/sisl-vp/examples/sisl-network-stack/ simulate
+</code></pre>
+
+<p>The <code>sisl-network-stack</code> example application and the associated SISL
+specification are described in greater detail below.</p>
+
+<h2 id="Usage-Example">Usage Example</h2>
+
+<p>In order to utilize the SISL tooling, a RISC-V application which processes input in a binary input format is required.
+For this purpose, a network application for the <a href="https://riot-os.org">RIOT operating system</a> is provided in the <code>./examples/sisl-network-stack/</code> directory.
+This application receives network packets via the <a href="https://datatracker.ietf.org/doc/html/rfc1055"><em>Serial Line Internet Protocol</em></a> (SLIP) interface provided by SymEx-VP.
+In this scenario, SISL can be employed to model the input received over this SLIP interface by the example RIOT application.</p>
+
+<p>The example RIOT application utilizes a minimal configuration of the RIOT network stack and uses IPv6.
+That is, it expects input to conform to the <a href="https://datatracker.ietf.org/doc/html/rfc8200#section-3">IPv6 message format</a>, consisting of a header and a payload.
+The IPv6 header is defined as follows:</p>
+
+<p><figure style="text-align: center;">
+<img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/IPv6_header-en.svg" /></p>
+
+<p><figcaption>IPv6 header message format (CC BY-SA 4.0 <a href="https://commons.wikimedia.org/wiki/File:IPv6_header-en.svg">Michel Bakni</a>).</figcaption>
+</figure></p>
+
+<p>A SISL specification which targets this input format could look as follows:</p>
+
+<pre><code>(define-input-format (ipv6-packet next-hdr &amp;encapsulate payload)
+  (make-uint 'verison-field 4 ipv6-version-value)
+  (make-uint 'traffic-class 8 #x0)
+  (make-uint 'flow-label 20 #x0)
+  (make-uint 'payload-length 16 (input-format-bytesize payload))
+  (make-uint 'next-header 8 next-hdr)
+  (make-uint 'hop-limit 8 #x42)
+  (make-symbolic 'src-addr 128)
+  (make-symbolic 'dest-addr 128))
+</code></pre>
+
+<p>This defines an input format which expects a <code>next-hdr</code> parameter and defines the fields of the format.
+Some fields are set to a fixed value while others depend on parameters (e.g. the <code>next-header</code> or <code>payload-length</code> field).
+Refer to the <a href="#SISL-Language-Reference">SISL Language Reference</a> below for details.
+The address fields have a complicated internal structure, instead of replicating this structure in the specification they are declared as symbolic.
+This causes the concolic testing engine, provided by SymEx-VP, to automatically infer appropriate values for them.</p>
+
+<p>From this SISL specification a low-level specification can be generated using the following code:</p>
+
+<pre><code>(write-format
+  (ipv6-packet
+    icmpv6-next-header
+    (make-symbolic 'body (bytes-&gt;bits 32))))
+</code></pre>
+
+<p>This creates an <code>ipv6-packet</code> instance with a <code>'next-hdr</code> value of <code>icmpv6-next-header</code> and a payload consisting of a sequence of 32 unconstrained symbolic bytes.
+The generated low-level specification can then be passed to SymEx-VP to test the <code>./examples/sisl-network-stack/</code> RIOT application.</p>
+
+<p>The full input specification for the aforementioned RIOT application can be found in <code>./examples/sisl-network-stack/input-format.scm</code>.
+In order to execute the <code>sisl-network-stack</code> application with this input format specification, run the following command from the <code>./examples/sisl-network-stack</code> subdirectory:</p>
+
+<pre><code>examples/sisl-network-stack$ make simulate
+</code></pre>
+
+<p>This will automatically generate the low-level specification and execute the application with it using SymEx-VP.
+SymEx-VP will then enumerate reachable paths through the program based on the symbolic values (e.g. the symbolic payload).
+For each executed path, a lot of debug information will be output.
+As such, the output for a single execution path may look as follows:</p>
+
+<pre><code>##
+# 192th concolic execution
+##
+
+ipv6: waiting for incoming message.
+RIOT network stack example application
+gnrc_netif_raw: reallocating.
+00000000  60  00  00  00  00  20  DE  42  FF  DE  1C  FE  80  1E  FD  00
+00000010  5E  5E  00  00  00  00  00  5E  00  00  00  00  00  00  00  00
+00000020  00  00  00  00  00  00  00  01  5E  00  00  00  00  00  00  5E
+00000030  5E  40  5E  5E  00  00  00  00  00  00  00  00  00  5E  00  00
+00000040  00  00  5E  00  00  5E  00  00
+ipv6: GNRC_NETAPI_MSG_TYPE_RCV received
+ipv6: Received (src = ffde:1cfe:801e:fd00:5e5e::5e, dst = ::1, next header = 222, length = 32)
+ipv6: forward nh = 222 to other threads
+
+Info: /OSCI/SystemC: Simulation stopped by user.
+</code></pre>
+
+<p>The RIOT application is build with a lot of debug output enabled to make it easier to comprehend how changes to the SISL input specification affect the concolic testing engine and the paths explored by it.
+To experiment with this example application, try changing individual fields of the specification in <code>./examples/sisl-network-stack/input-format.scm</code>, run <code>make simulate</code> again and see how your changes affect the output.</p>
+
+<p>Refer to <code>./examples/README.md</code> for more information on provided example applications.</p>
+
+<h2 id="SISL-Language-Reference">SISL Language Reference</h2>
+
+<p>SISL allows specifying binary input formats as a sequence of variable-width fields of different types.
+The core concepts of the SISL language are therefore: (1) <em>Input Formats</em> which consist of one or more variable-width fields and (2) <em>Input Fields</em> which correspond to variable-width bit blocks in the targeted input format specification.
+Both concepts are further described in the following subsections.</p>
+
+<h3 id="Input-Formats">Input Formats</h3>
+
+<p>Input formats can either be defined using the <code>define-input-format</code> macro (analog to how Scheme procedures are normally defined) or instantiated directly using the <code>make-input-format</code> procedure.
+Usually, the former is preferred as it allows defining parametrisable input formats which can be instantiated according to given parameters.
+As an example, consider the following input format definition:</p>
+
+<pre><code>(define-input-format (my-input-format some-parameter)
+  (make-uint 'start-frame 8 #xFE)
+  (make-uint 'value-byte 8 some-parameter)
+  (make-uint 'end-frame 8 #xFF))
+</code></pre>
+
+<p>The code above defines a new exemplary input format called <code>my-input-format</code> which takes one parameter (named <code>some-parameter</code>) and consists of three concrete fields: <code>start-frame</code>, <code>value-byte</code>, and <code>end-frame</code>.
+All fields are one byte in size, the <code>start-frame</code> and <code>end-frame</code> field have a fixed hexadecimal value (<code>0xFE</code> and <code>0xFF</code>), the <code>value-byte</code> field depends on the value of the defined parameter.
+As an example, the defined input format could be instantiated as follows:</p>
+
+<pre><code>(my-input-format #x42)
+</code></pre>
+
+<p>This would result in an input format equal to the following byte sequence: <code>[0xFE, 0x42, 0xFF]</code>.
+By utilizing <code>make-input-format</code> (i.e. without defining a parametrisable input format) the same byte sequence would be generated by the following code:</p>
+
+<pre><code>(make-input-format
+  (make-uint 'start-frame 8 #xFE)
+  (make-uint 'value-byte 8 #x42)
+  (make-uint 'end-frame 8 #xFF))
+</code></pre>
+
+<p>The advantage of <code>define-input-format</code> is that the same specification can be re-used multiple times, we envision that SISL support libraries are created in the future which provide ready-to-use parametrisable definitions for common binary input formats.
+Of course, an input format specification which corresponds to a fixed size of concrete bytes is nonsensical in the concolic testing context.
+The description of input format fields below will describe how concrete and symbolic fields can be combined in input formats.
+The remainder of this section will illustrate how different input formats can be encapsulated in each other and how a machine-readable low-level specification can be generated from the human-readable SISL specification.</p>
+
+<h4 id="Format-Encapsulation">Format Encapsulation</h4>
+
+<p>Different input formats, defined using <code>define-input-format</code> can also be encapsulated in each other.
+This is especially useful when modelling network protocols using sisl.
+For example, consider the following simplified code:</p>
+
+<pre><code>(define-input-format (ethernet-frame &amp;encapsulate payload)
+  ...)
+
+(define-input-format (ipv6-packet &amp;encapsulate payload)
+  ...
+  (make-uint 'payload-length 16 (input-format-bytesize payload))
+  ...)
+
+(define-input-format (udp-packet &amp;encapsulate payload)
+  ...)
+
+(ethernet-frame
+  (ipv6-packet
+    (udp-packet
+      (make-symbolic 'payload 128))))
+</code></pre>
+
+<p>This code defines three input formats: <a href="https://en.wikipedia.org/wiki/Ethernet_frame"><code>ethernet-frame</code></a>, <a href="https://en.wikipedia.org/wiki/IPv6_packet"><code>ipv6-packet</code></a>, <a href="https://en.wikipedia.org/wiki/User_Datagram_Protocol#UDP_datagram_structure"><code>udp-packet</code></a>.
+Furthermore, the code encapsulates this formats according to the <a href="https://en.wikipedia.org/wiki/TCP/IP_model">TCP/IP model</a> used on the Internet.
+The individual fields of these input formats have been largely omitted for clarity.
+The important thing to take away from this code is that each of these format definitions uses the <code>&amp;encapsulate</code> keyword to denote that an additional input format (named <code>payload</code>) is appended to the end of the defined one.
+The defined fields can also operate on this encapsulated <code>payload</code> (e.g. the size of the <code>payload-length</code> field in the <code>ipv6-packet</code> definition is set to the byte size of the encapsulated <code>payload</code>).</p>
+
+<p>The encapsulated must be defined when instantiating the defined formats.
+According to the instantiation at the very end of the code above, a symbolic payload is encapsulated in a UDP packet which is encapsulated in an IPv6 packet, which is ultimately encapsulated in an Ethernet frame.
+The <code>make-symbolic</code> procedure is further discussed in the description of input fields below.</p>
+
+<h4 id="The-Low-2d-Level-Specification">The Low-Level Specification</h4>
+
+<p>Since SISL input format specifications are executed R7RS Scheme programs, it is difficult to parse them correctly.
+For this reason, SISL provides a procedure called <code>write-format</code> which generates an easy machine-readable format of the provided input format specification.
+This procedure expects an instantiated input format and can, for example, be invoked as follows:</p>
+
+<pre><code>(write-format
+ (ethernet-frame
+   (ipv6-packet
+    (udp-packet
+     (make-symbolic 'payload 128)))))
+</code></pre>
+
+<p>This will write the defined input format in a machine-readable <a href="https://en.wikipedia.org/wiki/Bencode">Bencode encoding</a> to standard output.
+This output can be redirected to a file and passed to our provided version of SymEx-VP to perform concolic testing of RISC-V software based on the provided format.</p>
+
+<h3 id="Input-Fields">Input Fields</h3>
+
+<p>Input fields are the other central concept of the SISL language.
+As we have seen above, each input format consists of a sequence of input fields.
+In the examples above, we have primarily created input fields using the <code>make-uint</code> procedure.
+However, there are actually two types of different input fields which can be created using different procedures:</p>
+
+<ol>
+<li><em>Concrete Fields:</em> These fields have a concrete value (e.g. <code>4</code>, <code>3248902</code>, or <code>-1</code>) and can be created using the procedures <code>make-uint</code>, <code>make-sint</code> or <code>make-concrete</code>.</li>
+<li><em>Symbolic Fields:</em> These fields a symbolic value which can (optionally) be constrained to only represent a certain range of values (e.g. <code>X &gt; 5 &amp;&amp; X &lt; 10</code>). These fields can only be created using <code>make-symbolic</code>.</li>
+</ol>
+
+
+<p>Both field types are described in greater detail below.
+Independent of the field type, each field has a name (represent by a Scheme symbol), a fixed size and a value (which differs depending on the field type).</p>
+
+<h4 id="Concrete-Fields">Concrete Fields</h4>
+
+<p>Concrete fields are fields with a concrete value.
+The most low-level procedure to create concrete fields is <code>make-concrete</code>.
+This procedure expects a field name, a field size, and a field values as a R7RS bytevector.
+For example, the procedure may be invoked as follows:</p>
+
+<pre><code>(make-concrete 'c1 16 #u8(23 42))
+</code></pre>
+
+<p>This creates a two byte field with the name <code>c1</code> with a bytevector of the value <code>[23, 42]</code>.
+If the size of the bytevector is smaller than the given field size, then the bytevector value is padded with zeros.</p>
+
+<p>Based on the <code>make-concrete</code> procedure two utility procedures are provided which ease the creation of fields with concrete integer values: <code>make-sint</code> and <code>make-uint</code>.
+Both procedures a similar to <code>make-concrete</code> in the sense that they require the same parameter, except that the value parameter is an integer and not a bytevector.
+The <code>make-sint</code> procedure creates fields with a <a href="https://en.wikipedia.org/wiki/Two%27s_complement">two&rsquo;s complement</a> signed integer value.
+The <code>make-uint</code> procedure creates fields with an unsigned integer value.
+As such, an example signed integer field may be created as follows:</p>
+
+<pre><code>(make-sint 'negative 8 -128)
+</code></pre>
+
+<p>While an unsigned integer field may be created using:</p>
+
+<pre><code>(make-uint 'positive 8 255)
+</code></pre>
+
+<p>If the given integer value cannot be represented in the given amount of bits, an error is raised.
+All concrete fields default to network byte order (e.g. big endian).
+The byte order can be explicitly changed using the <code>field-be</code> and <code>field-le</code> procedures`.
+For example:</p>
+
+<pre><code>(make-input-format
+  (field-le (make-concrete 'c1 16 #(#x23 #x42)))
+  (field-le (make-uint 'c5 32 #x2342)))
+</code></pre>
+
+<h4 id="Symbolic-Fields">Symbolic Fields</h4>
+
+<p>Symbolic fields are similar to concrete fields except that they use symbolic instead of concolic field values.
+Symbolic input fields are created using the <code>make-symbolic</code> procedure.
+In order to create an unconstrained symbolic field, the procedure would be invoked as follows:</p>
+
+<pre><code>(make-symbolic 'unconstrained 64)
+</code></pre>
+
+<p>This would create an unconstrained symbolic value of 64 bits.
+However, it is often desirable to specify constrains for symbolic values (e.g. to confine the value to a certain range).
+This can be achieved by passing <a href="https://klee.github.io/docs/kquery/">KLEE KQuery</a> expressions as an option third argument.
+As Kquery is also based on S-Expressions, these constraints are expressed as Scheme quasiquotations within SISL.
+For example:</p>
+
+<pre><code>(define icmpv6-na 134)
+(define icmpv6-ns 135)
+
+(make-symbolic 'type 8 `((Or
+                            (Eq type ,icmpv6-na)
+                            (Eq type ,icmpv6-ns))))
+</code></pre>
+
+<p>The code above would constrain the symbolic <code>type</code> variable in a way that either has the value of the constant <code>icmpv6-na</code> or that of the constant <code>icmpv6-ns</code>.
+The first parameter of the <code>Eq</code> operation in the constrained refers to the name of the symbolic field.
+As such, it is also possible to define constraints based on prior fields, e.g.</p>
+
+<pre><code>(define-input-format my-format
+  (make-symbolic 'first 8)
+  (make-symbolic 'second `((Not (Eq first second)))))
+</code></pre>
+
+<p>In this example, the field with the name <code>second</code> is constrained to never have the same value as the field with the name <code>first</code>.
+Also note that the third parameter to <code>make-symbolic</code> is a list of constrains, hence it is possible to pass multiple constraints.
+For example:</p>
+
+<pre><code>(make-symbolic 'field `((Ult first 10) (Ugt first 5)))
+</code></pre>
+
+<p>Which would constraint <code>field</code> to <code>field &lt; 10 &amp;&amp; field &gt; 5</code>.
+Please refer to the <a href="https://klee.github.io/docs/kquery/">KQuery documentation</a> for more information on expressing constraints for symbolic input fields in SISL.</p>
+
+<h3 id="Miscellaneous">Miscellaneous</h3>
+
+<p>Apart from procedures to create input formats and input format fields, SISL also provides a few utility procedures.
+These are listed below:</p>
+
+<ul>
+<li><code>input-format-bitsize</code>: Returns size of a given input format in bits.</li>
+<li><code>input-format-bytesize</code>: Returns size of a given input format in bytes.</li>
+<li><code>u{8,16,32,64}</code>: Syntactic sugar to create unsigned 8, 16, 32, and 64 bit integers.</li>
+<li><code>s{8,16,32,64}</code>: Syntactic sugar to create signed 8, 16, 32, and 64 bit integers.</li>
+<li><code>bits-&gt;bytes</code>: Convert the given amount of bits to bytes.</li>
+<li><code>bytes-&gt;bits</code>: Convert the given amount of bytes to bits.</li>
+</ul>
+
+
+<p>Additionally, keep in mind that each SISL specification is a valid Scheme program.
+For this reason, it is possible to use Scheme language features (e.g. procedures, variables, constants, …) in a SISL specification.
+For example, as we have seen above, Scheme constants can be used to avoid magic numbers in defined input formats (e.g. <code>(define icmpv6-na 134)</code>).</p>
+
+<h2 id="Acknowledgements">Acknowledgements</h2>
+
+<p>This work was supported in part by the German Federal Ministry of
+Education and Research (BMBF) within the project Scale4Edge under
+contract no. 16ME0127 and within the project VerSys under contract
+no. 01IW19001.</p>
+
+		</article>
+	</body>
+</html>
