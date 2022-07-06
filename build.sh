@@ -2,4 +2,4 @@
 exec discount-theme \
 	-c +autolink,+idanchor \
 	-t README.theme -f \
-	-o ./www/index.html README.md
+	-o index.html README.md
