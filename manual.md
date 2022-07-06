@@ -13,6 +13,13 @@ the link, you will download a ZIP archive containing the SISL source
 code. Information on how to install the SISL tooling, using this ZIP
 archive, are provided below.
 
+Apart from the source tarball, the SISL source code and the
+modifications made to integrate SISL with SymEx-VP are also available in
+the following Git repositories:
+
+* https://github.com/agra-uni-bremen/sisl
+* https://github.com/agra-uni-bremen/sisl-vp
+
 ## Directory Organization
 
 The important subdirectories in the downloaded archive are:
