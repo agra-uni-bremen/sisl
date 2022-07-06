@@ -4,7 +4,7 @@ Scheme-based Input Specification language (SISL) for [SymEx-VP](https://github.c
 
 ## Installation
 
-If a correctly configured CHICKEN toolchain is available run:
+If a correctly configured [CHICKEN](https://call-cc.org) toolchain is available run:
 
     $ chicken-install
 
