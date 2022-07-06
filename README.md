@@ -8,6 +8,8 @@ If a correctly configured [CHICKEN](https://call-cc.org) toolchain is available 
 
     $ chicken-install
 
+Afterwards, you should be able to use the specifications provided in `./examples`.
+
 ## How To Cite
 
 The SISL tooling is described in more detail in the publication *SISL:
