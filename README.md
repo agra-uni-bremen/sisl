@@ -8,6 +8,14 @@ If a correctly configured CHICKEN toolchain is available run:
 
     $ chicken-install
 
+## How To Cite
+
+The SISL tooling is described in more detail in the publication *SISL:
+Concolic Testing of Structured Binary Input Formats via Partial
+Specification* which will be published as part of the 2022 *International
+Symposium on Automated Technology for Verification and Analysis*
+([ATVA](http://atva-conference.org/2022/)]).
+
 ## Acknowledgements
 
 This work was supported in part by the German Federal Ministry of
