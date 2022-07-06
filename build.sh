@@ -1,5 +1,5 @@
 #!/bin/sh
 exec discount-theme \
 	-c +autolink,+idanchor \
-	-t README.theme -f \
-	-o index.html README.md
+	-t manual.theme -f \
+	-o index.html manual.md
