@@ -1,6 +1,6 @@
 # SISL
 
-Scheme-based Input Specification language (SISL) for [SymEx-VP](https://github.com/agra-uni-bremen/symex-vp).
+Scheme-based Input Specification language (SISL) for Concolic Testing (with [SymEx-VP](https://github.com/agra-uni-bremen/symex-vp)).
 
 ## Installation
 
