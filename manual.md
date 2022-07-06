@@ -92,7 +92,7 @@ The IPv6 header is defined as follows:
 <figcaption>IPv6 header message format (CC BY-SA 4.0 <a href="https://commons.wikimedia.org/wiki/File:IPv6_header-en.svg">Michel Bakni</a>).</figcaption>
 </figure>
 
-A SISL specification which targets this input format could looks as follows:
+A SISL specification which targets this input format could look as follows:
 
 	(define-input-format (ipv6-packet next-hdr &encapsulate payload)
 	  (make-uint 'verison-field 4 ipv6-version-value)
