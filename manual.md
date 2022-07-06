@@ -5,6 +5,12 @@ SISL is a *Domain-Specific Language* (DSL) for describing highly
 structured binary input formats (e.g. protocol message formats) for
 [concolic software testing][ct wikipedia].
 
+More information about SISL is also available in the publication *SISL:
+Concolic Testing of Structured Binary Input Formats via Partial
+Specification* which will be published as part of the 2022 International
+Symposium on Automated Technology for Verification and Analysis
+([ATVA](https://atva-conference.org/2022/)).
+
 ## Download
 
 To install SISL, first download the source code and accompanying example
