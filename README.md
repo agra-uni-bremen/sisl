@@ -16,7 +16,7 @@ The SISL tooling is described in more detail in the publication *SISL:
 Concolic Testing of Structured Binary Input Formats via Partial
 Specification* which will be published as part of the 2022 *International
 Symposium on Automated Technology for Verification and Analysis*
-([ATVA](http://atva-conference.org/2022/)]).
+([ATVA](http://atva-conference.org/2022/)).
 
 ## Acknowledgements
 
