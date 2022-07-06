@@ -361,4 +361,3 @@ no. 01IW19001.
 [rfc1055]: https://datatracker.ietf.org/doc/html/rfc1055
 [kquery]: https://klee.github.io/docs/kquery/
 [sisl download]: https://user.informatik.uni-bremen.de/~tempel/sisl/sisl.zip
-[sisl artifacts]: https://user.informatik.uni-bremen.de/~tempel/sisl/artifacts.zip
