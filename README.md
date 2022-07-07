@@ -1,6 +1,6 @@
 # SISL
 
-Scheme-based Input Specification language (SISL) for Concolic Testing (with [SymEx-VP](https://github.com/agra-uni-bremen/symex-vp)).
+Scheme-based Input Specification language (SISL) for Concolic Testing (with [SymEx-VP](https://github.com/agra-uni-bremen/sisl-vp)).
 
 ## Installation
 
@@ -9,6 +9,10 @@ If a correctly configured [CHICKEN](https://call-cc.org) toolchain is available 
     $ chicken-install
 
 Afterwards, you should be able to use the specifications provided in `./examples`.
+
+## Usage
+
+Usage information is provided in the SISL [user manual](https://agra-uni-bremen.github.io/sisl/).
 
 ## How To Cite
 
