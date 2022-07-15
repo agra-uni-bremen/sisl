@@ -97,7 +97,7 @@ The IPv6 header is defined as follows:
 A SISL specification which targets this input format could look as follows:
 
 	(define-input-format (ipv6-packet next-hdr &encapsulate payload)
-	  (make-uint 'verison-field 4 ipv6-version-value)
+	  (make-uint 'version-field 4 ipv6-version-value)
 	  (make-uint 'traffic-class 8 #x0)
 	  (make-uint 'flow-label 20 #x0)
 	  (make-uint 'payload-length 16 (input-format-bytesize payload))
