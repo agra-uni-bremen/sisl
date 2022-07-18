@@ -10,7 +10,7 @@ Concolic Testing of Structured Binary Input Formats via Partial
 Specification* which will be published as part of the 2022 International
 Symposium on Automated Technology for Verification and Analysis
 ([ATVA](https://atva-conference.org/2022/)) by Sören Tempel, Vladimir
-Herdt and Rolf Drechsler. SISL has been developed by the
+Herdt, and Rolf Drechsler. SISL has been developed by the
 [Group of Computer Architecture](http://www.informatik.uni-bremen.de/agra/eng/)
 at the [University of Bremen](https://www.uni-bremen.de/e). If you have
 any question about SISL you can contact us via email at
